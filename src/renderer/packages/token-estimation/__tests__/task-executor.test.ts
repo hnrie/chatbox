@@ -12,11 +12,15 @@ vi.mock('@/stores/taskSessionStore', () => ({
   getTaskSession: vi.fn(),
 }))
 
-vi.mock('@/storage', () => ({
-  default: {
-    getBlob: vi.fn(),
-  },
-}))
+vi.mock('@/storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/storage')>()
+  return {
+    ...actual,
+    default: {
+      getBlob: vi.fn(),
+    },
+  }
+})
 
 import storage from '@/storage'
 import * as chatStore from '@/stores/chatStore'

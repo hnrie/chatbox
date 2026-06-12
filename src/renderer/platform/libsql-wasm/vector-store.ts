@@ -28,12 +28,19 @@ export class WasmVectorStore {
         );
       `,
     })
-    await this.client.execute({
-      sql: `
-        CREATE INDEX IF NOT EXISTS ${parsedIndexName}_vector_idx
-        ON ${parsedIndexName} (libsql_vector_idx(embedding))
-      `,
-    })
+    try {
+      // ANN index is a query optimization only; queries fall back to a full
+      // scan with vector_distance_cos. The Turso WASM engine supports the
+      // vector functions but not (yet) libsql_vector_idx, so tolerate failure.
+      await this.client.execute({
+        sql: `
+          CREATE INDEX IF NOT EXISTS ${parsedIndexName}_vector_idx
+          ON ${parsedIndexName} (libsql_vector_idx(embedding))
+        `,
+      })
+    } catch (error) {
+      console.warn(`Vector ANN index not supported by this database engine, using exact search for ${indexName}`, error)
+    }
   }
 
   async upsert({

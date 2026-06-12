@@ -1,6 +1,6 @@
 import type { Client, InArgs, InStatement, ResultSet, Row, TransactionMode } from '@libsql/core/api'
 import { ResultSetImpl } from '@libsql/core/util'
-import { connect, type Database } from '@tursodatabase/database-wasm/bundle'
+import type { Database } from '@tursodatabase/database-wasm/bundle'
 
 type NormalizedStatement = {
   sql: string
@@ -27,9 +27,24 @@ function normalizeStatement(stmtOrSql: InStatement | string, args?: InArgs): Nor
   return { sql: stmtOrSql.sql, args: Object.values(stmtOrSql.args) }
 }
 
-function toResultSet(rows: Record<string, unknown>[], runInfo?: { changes: number; lastInsertRowid: number }): ResultSet {
+function toRow(rowObject: Record<string, unknown>, columns: string[]): Row {
+  // libsql Row supports access both by index and by column name; consumers
+  // (knowledge base / RAG services) read columns by name.
+  const row = columns.map((column) => rowObject[column]) as unknown as Row
+  for (const column of columns) {
+    if (!(column in row)) {
+      Object.defineProperty(row, column, { value: rowObject[column], enumerable: false })
+    }
+  }
+  return row
+}
+
+function toResultSet(
+  rows: Record<string, unknown>[],
+  runInfo?: { changes: number; lastInsertRowid: number }
+): ResultSet {
   const columns = rows.length > 0 ? Object.keys(rows[0]) : []
-  const resultRows = rows.map((row) => columns.map((column) => row[column])) as unknown as Row[]
+  const resultRows = rows.map((rowObject) => toRow(rowObject, columns))
   return new ResultSetImpl(
     columns,
     columns.map(() => ''),
@@ -118,7 +133,10 @@ class WasmLibsqlClient {
     return toResultSet(rows)
   }
 
-  async batch(stmts: Array<InStatement | [string, InArgs?]>, mode: TransactionMode = 'deferred'): Promise<Array<ResultSet>> {
+  async batch(
+    stmts: Array<InStatement | [string, InArgs?]>,
+    mode: TransactionMode = 'deferred'
+  ): Promise<Array<ResultSet>> {
     const begin =
       mode === 'write' ? 'BEGIN IMMEDIATE' : mode === 'read' ? 'BEGIN TRANSACTION READONLY' : 'BEGIN DEFERRED'
     await this.db.exec(begin)
@@ -170,6 +188,10 @@ class WasmLibsqlClient {
 }
 
 export async function createWasmLibsqlClient(connectionUrl: string) {
+  // Dynamic import: the WASM bundle spawns a Worker at module load, which
+  // only works in a browser. Loading it lazily keeps every transitive
+  // importer (platform index, stores, tests) safe in non-browser contexts.
+  const { connect } = await import('@tursodatabase/database-wasm/bundle')
   const db = await connect(resolveOpfsPath(connectionUrl))
   return new WasmLibsqlClient(db) as unknown as Client
 }

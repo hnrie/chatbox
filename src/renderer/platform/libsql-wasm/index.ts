@@ -1,5 +1,8 @@
-export { createWasmLibsqlClient } from './create-client'
-export { getKnowledgeBaseDatabase, getSessionAttachmentRagDatabase, resetWasmDatabasesForTests } from './db-manager'
+// NOTE: deliberately no re-exports of ./create-client or ./db-manager here.
+// Those modules import @tursodatabase/database-wasm, which spawns a Worker at
+// module load and only works in a browser. Keeping this entry lightweight
+// lets feature flags / capability checks be imported anywhere (incl. tests).
+// Import ./db-manager or ./create-client directly where the database is used.
 
 export function isWasmDatabaseSupported(): boolean {
   // The Turso WASM database persists to OPFS and coordinates with its I/O

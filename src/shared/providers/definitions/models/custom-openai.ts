@@ -52,7 +52,10 @@ export default class CustomOpenAI extends AbstractAISDKModel {
       name: this.name,
       apiKey: this.options.apiKey,
       baseURL: this.options.apiHost,
-      fetch: fetchFunction,
+      // Non-chat calls (e.g. text embeddings for knowledge base) come through
+      // here without a custom fetch; they still must honor the provider's
+      // proxy setting, which is essential in the browser (CORS).
+      fetch: fetchFunction ?? (createFetchWithProxy(this.options.useProxy, this.dependencies) as FetchFunction),
       headers: this.options.apiHost.includes('openrouter.ai')
         ? {
             'HTTP-Referer': 'https://chatboxai.app',
