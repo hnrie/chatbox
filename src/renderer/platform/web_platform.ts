@@ -16,7 +16,7 @@ import { isWasmDatabaseSupported } from './libsql-wasm'
 import { IndexedDBStorage } from './storages'
 import WebExporter from './web_exporter'
 import webLogger from './web_logger'
-import { parseTextFileLocally } from './web_platform_utils'
+import { parseTextFileLocally, parseUrlContentFree } from './web_platform_utils'
 
 export default class WebPlatform extends IndexedDBStorage implements Platform {
   public type: PlatformType = 'web'
@@ -174,7 +174,7 @@ export default class WebPlatform extends IndexedDBStorage implements Platform {
   }
 
   public async parseUrl(url: string): Promise<{ key: string; title: string }> {
-    throw new Error('Not implemented')
+    return parseUrlContentFree(url)
   }
 
   public async isFullscreen() {
@@ -186,7 +186,7 @@ export default class WebPlatform extends IndexedDBStorage implements Platform {
   }
 
   installUpdate(): Promise<void> {
-    throw new Error('Method not implemented.')
+    return Promise.resolve()
   }
 
   public getKnowledgeBaseController(): KnowledgeBaseController {
