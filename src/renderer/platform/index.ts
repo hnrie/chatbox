@@ -1,4 +1,4 @@
-import { CHATBOX_BUILD_TARGET } from '@/variables'
+import { CHATBOX_BUILD_PLATFORM, CHATBOX_BUILD_TARGET } from '@/variables'
 import DesktopPlatform from './desktop_platform'
 import type { Platform } from './interfaces'
 import MobilePlatform from './mobile_platform'
@@ -12,11 +12,14 @@ function initPlatform(): Platform {
   }
   if (CHATBOX_BUILD_TARGET === 'mobile_app') {
     return new MobilePlatform()
-  } else if (typeof window !== 'undefined' && window.electronAPI) {
-    return new DesktopPlatform(window.electronAPI)
-  } else {
+  }
+  if (CHATBOX_BUILD_PLATFORM === 'web' || process.env.DEV_WEB_ONLY === 'true') {
     return new WebPlatform()
   }
+  if (typeof window !== 'undefined' && window.electronAPI) {
+    return new DesktopPlatform(window.electronAPI)
+  }
+  return new WebPlatform()
 }
 
 export default initPlatform()

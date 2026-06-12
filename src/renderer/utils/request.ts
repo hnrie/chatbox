@@ -38,11 +38,22 @@ async function retryRequest<T>(fn: () => Promise<T>, retry: number, url: string)
   throw requestError || new Error('Unknown error')
 }
 
-function buildHeaders(options: RequestOptions, url: string): Headers {
+function shouldUseCorsProxy(url: string, useProxy: boolean): boolean {
+  if (isLocalHost(url) || platform.type === 'mobile') {
+    return false
+  }
+  // Browser builds cannot call most provider APIs directly due to CORS.
+  if (platform.type === 'web') {
+    return true
+  }
+  return useProxy
+}
+
+function buildHeaders(options: RequestOptions, url: string, effectiveUseProxy: boolean): Headers {
   const headers = new Headers(options.headers)
   headers.set('Content-Type', 'application/json')
 
-  if (options.useProxy && !isLocalHost(url) && platform.type !== 'mobile') {
+  if (effectiveUseProxy) {
     headers.set('CHATBOX-TARGET-URI', url)
     headers.set('CHATBOX-PLATFORM', platform.type)
   }
@@ -52,17 +63,18 @@ function buildHeaders(options: RequestOptions, url: string): Headers {
 
 async function doRequest(url: string, options: RequestOptions): Promise<Response> {
   const { signal, retry = 3, useProxy = false, body, method } = options
+  const effectiveUseProxy = shouldUseCorsProxy(url, useProxy)
   let requestUrl = url
-  const headers = buildHeaders(options, url)
+  const headers = buildHeaders(options, url, effectiveUseProxy)
 
-  if (useProxy && !isLocalHost(url) && platform.type !== 'mobile') {
+  if (effectiveUseProxy) {
     const version = await platform.getVersion()
     headers.set('CHATBOX-VERSION', version || 'unknown')
     requestUrl = 'https://cors-proxy.chatboxai.app/proxy-api/completions'
   }
 
   const makeRequest = async () => {
-    if (platform.type === 'mobile' && useProxy) {
+    if (platform.type === 'mobile' && effectiveUseProxy) {
       return handleMobileRequest(requestUrl, method, headers, body, signal)
     }
 

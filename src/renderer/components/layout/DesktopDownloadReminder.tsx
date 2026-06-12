@@ -45,7 +45,7 @@ export default function DesktopDownloadReminder() {
 
           <Text size="xs" c="chatbox-secondary" style={{ whiteSpace: 'pre-line' }}>
             {t(
-              '1. Your chat history on web version can only be stored in the browser cache (unreliable - it may be cleaned by browser). \n2. MCP and Knowledge Base are currently supported on the desktop app only. '
+              '1. Your chat history on web version can only be stored in the browser cache (unreliable - it may be cleaned by browser). \n2. MCP and Skills are currently supported on the desktop app only. Knowledge Base works in modern browsers with local storage support.'
             )}
           </Text>
 

@@ -301,11 +301,21 @@ Before you begin, ensure you have the following installed:
 | Command | Description |
 |---------|-------------|
 | `pnpm run dev` | Start development server with hot-reload |
+| `pnpm run dev:web` | Start web-only dev server (open in browser at `http://localhost:1212`) |
+| `pnpm run build:web` | Build static web SPA for serverless hosts (Vercel, Netlify, etc.) |
+| `pnpm run preview:web` | Serve the built web app locally with SPA fallback |
 | `pnpm run package` | Build and package for current platform |
 | `pnpm run package:all` | Build and package for all platforms |
 | `pnpm run build` | Build for production without packaging |
 | `pnpm run lint` | Run Biome to check code quality |
 | `pnpm run test` | Run Vitest test suite |
+
+### Web Deployment
+
+Chatbox runs as a **static SPA** in the browser. Build with `pnpm build:web` and deploy `release/app/dist/renderer/` to any static host.
+
+- **Vercel / Netlify**: configuration files (`vercel.json`, `netlify.toml`) are included in the repo.
+- **Full guide**: see [docs/web-deployment.md](./docs/web-deployment.md).
 
 ### Project Structure
 
