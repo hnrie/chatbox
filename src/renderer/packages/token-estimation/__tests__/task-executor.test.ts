@@ -13,6 +13,9 @@ vi.mock('@/stores/taskSessionStore', () => ({
 }))
 
 vi.mock('@/storage', () => ({
+  StorageKey: {
+    RemoteConfig: 'remoteConfig',
+  },
   default: {
     getBlob: vi.fn(),
   },
