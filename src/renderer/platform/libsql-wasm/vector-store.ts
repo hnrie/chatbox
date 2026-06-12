@@ -101,7 +101,7 @@ export class WasmVectorStore {
       sql: `
         WITH vector_scores AS (
           SELECT
-            vector_id as id,
+            id,
             (1-vector_distance_cos(embedding, '${vectorStr}')) as score,
             metadata
           FROM ${parsedIndexName}
