@@ -10,6 +10,7 @@ import { useToggleMCPServer } from '@/hooks/mcp'
 import { mcpController } from '@/packages/mcp/controller'
 import type { MCPServerConfig } from '@/packages/mcp/types'
 import { toastError } from '@/packages/toast'
+import platform from '@/platform'
 import { useMcpSettings, useSettingsStore } from '@/stores/settingsStore'
 import { trackEvent } from '@/utils/track'
 import { ConfigModal } from './ConfigModal'
@@ -123,8 +124,16 @@ const CustomServersSection: FC<Props> = (props) => {
 
   const triggerImportJson = async () => {
     const content = await navigator.clipboard.readText()
-    const servers = parseServersFromJson(content)
+    let servers = parseServersFromJson(content)
     trackEvent('import_mcp_servers_from_json', { count: servers.length })
+    if (platform.type !== 'desktop') {
+      const httpServers = servers.filter((s) => s.transport.type === 'http')
+      if (servers.length > 0 && httpServers.length === 0) {
+        toastError(t('Local (stdio) MCP servers are only available in the desktop app. Use a Remote (HTTP/SSE) server instead.'))
+        return
+      }
+      servers = httpServers
+    }
     if (!servers.length) {
       toastError(t('No MCP servers parsed from clipboard'))
       return

@@ -143,6 +143,8 @@ export function RouteComponent() {
           maw={320}
           placeholder="socks5://127.0.0.1:6153"
           value={settings.proxy}
+          disabled={platform.type === 'web'}
+          description={platform.type === 'web' ? t('not available in browser') : undefined}
           onChange={(e) =>
             setSettings({
               proxy: e.currentTarget.value,

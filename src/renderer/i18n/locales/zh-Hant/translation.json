@@ -480,6 +480,7 @@
   "Loading...": "載入中...",
   "Local": "本機",
   "Local (stdio)": "本機 (stdio)",
+  "Local (stdio) MCP servers are only available in the desktop app. Use a Remote (HTTP/SSE) server instead.": "本機（stdio）MCP 伺服器僅在桌面應用程式中可用。請改用遠端（HTTP/SSE）伺服器。",
   "Local document parsing failed. You can go to <OpenDocumentParserSettingButton>Settings</OpenDocumentParserSettingButton> and switch to Chatbox AI for cloud-based document parsing.": "本地文件解析失敗。您可以前往 <OpenDocumentParserSettingButton>設定</OpenDocumentParserSettingButton> 並切換至 Chatbox AI 以進行雲端文件解析。",
   "Local Mode": "本地模式",
   "Local parse failed": "本地解析失敗",
