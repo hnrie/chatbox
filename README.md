@@ -304,8 +304,11 @@ Before you begin, ensure you have the following installed:
 | `pnpm run package` | Build and package for current platform |
 | `pnpm run package:all` | Build and package for all platforms |
 | `pnpm run build` | Build for production without packaging |
+| `pnpm run build:web` | Build the static browser app for Vercel, Netlify, or another static host |
 | `pnpm run lint` | Run Biome to check code quality |
 | `pnpm run test` | Run Vitest test suite |
+
+See [Web deployment](./docs/web-deployment.md) for serverless hosting setup.
 
 ### Project Structure
 
