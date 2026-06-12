@@ -1,6 +1,5 @@
 import type { Client } from '@libsql/client'
 import { getLogger } from '@/lib/utils'
-import { createWasmLibsqlClient } from './create-client'
 import { WasmVectorStore } from './vector-store'
 
 const log = getLogger('libsql-wasm:db-manager')
@@ -23,12 +22,14 @@ let knowledgeBaseHandle: Promise<KnowledgeBaseHandle> | null = null
 let sessionAttachmentRagHandle: Promise<SessionAttachmentRagHandle> | null = null
 
 async function openKnowledgeBase(): Promise<KnowledgeBaseHandle> {
+  const { createWasmLibsqlClient } = await import('./create-client')
   const client = await createWasmLibsqlClient(`file:${KB_DB}`)
   log.info('[WASM] Knowledge base database opened')
   return { db: client, vectorStore: new WasmVectorStore(client) }
 }
 
 async function openSessionAttachmentRag(): Promise<SessionAttachmentRagHandle> {
+  const { createWasmLibsqlClient } = await import('./create-client')
   const db = await createWasmLibsqlClient(`file:${SESSION_RAG_DB}`)
   const vectorClient = await createWasmLibsqlClient(`file:${SESSION_RAG_VECTOR_DB}`)
   log.info('[WASM] Session attachment RAG databases opened')
