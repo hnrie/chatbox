@@ -8,7 +8,7 @@ import { openaiProvider } from './openai'
 const mockScope: SentryScope = {
   setTag: vi.fn(),
   setExtra: vi.fn(),
-})
+}
 
 function createDependencies(): ModelDependencies {
   return {
@@ -72,4 +72,4 @@ describe('openaiProvider', () => {
     expect(model).toBeInstanceOf(OpenAI)
     expect((model as OpenAI).options.useProxy).toBe(false)
   })
-}
+})
