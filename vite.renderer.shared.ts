@@ -154,7 +154,9 @@ export function createRendererConfig(options: RendererConfigOptions): UserConfig
     ].filter(Boolean),
     build: {
       outDir: isProduction ? outDir : undefined,
-      target: isWeb ? 'es2022' : 'es2020', // WASM database requires top-level await (es2022+)
+      // The WASM database chunk uses top-level await (es2022+). Electron 35
+      // (Chromium 134) and modern mobile WebViews support es2022 natively.
+      target: 'es2022',
       sourcemap: isProduction ? 'hidden' : true,
       minify: isProduction ? 'esbuild' : false, // Use esbuild for faster, less memory-intensive minification
       rollupOptions: {
