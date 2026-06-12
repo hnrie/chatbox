@@ -277,6 +277,10 @@ const KnowledgeBaseDocuments: React.FC<KnowledgeBaseDocumentsProps> = ({ knowled
         const correctedFiles: FileMeta[] = []
         for (const file of uploadableFiles) {
           const correctedFile = correctMimeType(file)
+          if (platform.type === 'web' && !correctedFile.path) {
+            const { storeKnowledgeBaseFile } = await import('@/services/knowledge-base/file-processing')
+            correctedFile.path = await storeKnowledgeBaseFile(file)
+          }
           correctedFiles.push(correctedFile)
         }
 

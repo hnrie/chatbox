@@ -239,7 +239,7 @@ export default defineConfig(({ mode }) => {
       ].filter(Boolean),
       build: {
         outDir: isProduction ? 'release/app/dist/renderer' : undefined,
-        target: 'es2020', // Avoid static initialization blocks for browser compatibility
+        target: isWeb ? 'es2022' : 'es2020', // WASM database requires top-level await (es2022+)
         sourcemap: isProduction ? 'hidden' : true,
         minify: isProduction ? 'esbuild' : false, // Use esbuild for faster, less memory-intensive minification
         rollupOptions: {
@@ -309,7 +309,7 @@ export default defineConfig(({ mode }) => {
         // cache artifacts that intermittently break MUI internals after branch or
         // dependency changes with runtime errors like "createTheme_default is not a function".
         force: true,
-        include: ['mermaid'],
+        include: ['mermaid', ...(isWeb ? ['@tursodatabase/database-wasm/vite'] : [])],
         esbuildOptions: {
           target: 'es2015',
         },

@@ -158,6 +158,8 @@ initializeApp()
     // Initialize auto-updater event listeners (desktop only, idempotent)
     if (platform.type === 'desktop') {
       initUpdateListeners()
+    }
+    if (platform.type === 'desktop' || platform.type === 'web') {
       initSessionAttachmentRagMaintenance()
     }
     // Cleanup is intentionally not captured — listeners persist for the app lifetime

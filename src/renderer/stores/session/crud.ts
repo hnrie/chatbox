@@ -9,6 +9,7 @@ import { getDefaultStore } from 'jotai'
 import { omit } from 'lodash'
 import { router } from '@/router'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import { sortSessionRecords } from '@/storage/SessionMetaStorage'
 import * as atoms from '../atoms'
 import * as chatStore from '../chatStore'
@@ -244,7 +245,7 @@ export async function clear(sessionId: string) {
   if (!session) {
     return
   }
-  if (platform.type === 'desktop') {
+  if (supportsSessionAttachmentRag()) {
     try {
       await platform.getSessionAttachmentRagController().deleteSessionAttachments(sessionId)
     } catch (error) {

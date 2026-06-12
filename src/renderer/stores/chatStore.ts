@@ -20,6 +20,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import storage, { StorageKey } from '@/storage'
 import type { SessionMetaStorage } from '@/storage/SessionMetaStorage'
 import { sortSessionRecords } from '@/storage/SessionMetaStorage'
@@ -309,7 +310,7 @@ export async function updateSessionCache(sessionId: string, updater: Updater<Ses
 
 export async function deleteSession(id: string) {
   console.debug('chatStore', 'deleteSession', id)
-  if (platform.type === 'desktop') {
+  if (supportsSessionAttachmentRag()) {
     try {
       await platform.getSessionAttachmentRagController().deleteSessionAttachments(id)
     } catch (error) {
@@ -333,7 +334,7 @@ export async function deleteSessions(ids: string[]) {
   const uniqueIds = [...new Set(ids)]
   if (uniqueIds.length === 0) return
 
-  if (platform.type === 'desktop') {
+  if (supportsSessionAttachmentRag()) {
     await runInChunks(uniqueIds, 10, async (id) => {
       try {
         await platform.getSessionAttachmentRagController().deleteSessionAttachments(id)

@@ -8,8 +8,11 @@ import { IndexedDBSessionMetaStorage, type SessionMetaStorage } from '@/storage/
 import { IndexedDBTaskSessionStorage, type TaskSessionStorage } from '@/storage/TaskSessionStorage'
 import { getBrowser, getOS } from '../packages/navigator'
 import type { Platform, PlatformType } from './interfaces'
+import WebKnowledgeBaseController from './knowledge-base/web-controller'
 import type { KnowledgeBaseController } from './knowledge-base/interface'
+import WebSessionAttachmentRagController from './session-attachment-rag/web-controller'
 import type { SessionAttachmentRagController } from './session-attachment-rag/interface'
+import { isWasmDatabaseSupported } from './libsql-wasm'
 import { IndexedDBStorage } from './storages'
 import WebExporter from './web_exporter'
 import webLogger from './web_logger'
@@ -23,6 +26,8 @@ export default class WebPlatform extends IndexedDBStorage implements Platform {
   private imageGenerationStorage: ImageGenerationStorage | null = null
   private taskSessionStorage: TaskSessionStorage | null = null
   private sessionMetaStorage: SessionMetaStorage | null = null
+  private kbController!: KnowledgeBaseController
+  private sessionAttachmentRagController!: SessionAttachmentRagController
 
   constructor() {
     super()
@@ -185,11 +190,19 @@ export default class WebPlatform extends IndexedDBStorage implements Platform {
   }
 
   public getKnowledgeBaseController(): KnowledgeBaseController {
-    throw new Error('Method not implemented.')
+    if (!isWasmDatabaseSupported()) {
+      throw new Error('Knowledge base requires a browser with IndexedDB and OPFS support.')
+    }
+    this.kbController ??= new WebKnowledgeBaseController()
+    return this.kbController
   }
 
   public getSessionAttachmentRagController(): SessionAttachmentRagController {
-    throw new Error('Session attachment RAG is not implemented on web.')
+    if (!isWasmDatabaseSupported()) {
+      throw new Error('Session attachment RAG requires a browser with IndexedDB and OPFS support.')
+    }
+    this.sessionAttachmentRagController ??= new WebSessionAttachmentRagController()
+    return this.sessionAttachmentRagController
   }
 
   public getImageGenerationStorage(): ImageGenerationStorage {

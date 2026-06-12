@@ -1,6 +1,7 @@
 import type { Session, SessionAttachmentRagMaintenanceResult } from '@shared/types'
 import { getLogger } from '@/lib/utils'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import { getSession, listSessionsMeta } from '@/stores/chatStore'
 import { SESSION_ATTACHMENT_RAG_LOG_PREFIX } from '../../shared/session-attachment-rag/logging'
 
@@ -40,7 +41,7 @@ function collectSessionMessageIds(session: Session): string[] {
 }
 
 async function collectMaintenanceScope() {
-  if (platform.type !== 'desktop') {
+  if (!supportsSessionAttachmentRag()) {
     return {
       sessionIds: [],
       messageIds: [],
@@ -106,7 +107,7 @@ export async function runSessionAttachmentRagMaintenancePass() {
 }
 
 export function initSessionAttachmentRagMaintenance() {
-  if (maintenanceStarted || platform.type !== 'desktop') {
+  if (maintenanceStarted || !supportsSessionAttachmentRag()) {
     return
   }
 
