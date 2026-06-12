@@ -1,0 +1,57 @@
+# Netlify deployment config for the Chatbox web build.
+# Docs: docs/web-deployment.md
+
+[build]
+  command = "pnpm build:web"
+  publish = "release/app/dist/renderer"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # The Electron binary is not needed to produce the static web build.
+  ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
+  # Skip postinstall scripts: they rebuild Electron-only native modules that
+  # the web build does not use (and would fail in the build image).
+  PNPM_FLAGS = "--ignore-scripts"
+
+[functions]
+  directory = "netlify/functions"
+
+# Required for the in-browser WASM SQLite database (knowledge base & file RAG):
+# SharedArrayBuffer needs a cross-origin-isolated context.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "credentialless"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/styles/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# SPA fallback: serve index.html for all paths that are not static files.
+# The cors-proxy function path (/proxy-api/completions) takes precedence.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

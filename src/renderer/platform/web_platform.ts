@@ -8,15 +8,15 @@ import { IndexedDBSessionMetaStorage, type SessionMetaStorage } from '@/storage/
 import { IndexedDBTaskSessionStorage, type TaskSessionStorage } from '@/storage/TaskSessionStorage'
 import { getBrowser, getOS } from '../packages/navigator'
 import type { Platform, PlatformType } from './interfaces'
-import WebKnowledgeBaseController from './knowledge-base/web-controller'
 import type { KnowledgeBaseController } from './knowledge-base/interface'
-import WebSessionAttachmentRagController from './session-attachment-rag/web-controller'
-import type { SessionAttachmentRagController } from './session-attachment-rag/interface'
+import WebKnowledgeBaseController from './knowledge-base/web-controller'
 import { isWasmDatabaseSupported } from './libsql-wasm'
+import type { SessionAttachmentRagController } from './session-attachment-rag/interface'
+import WebSessionAttachmentRagController from './session-attachment-rag/web-controller'
 import { IndexedDBStorage } from './storages'
 import WebExporter from './web_exporter'
 import webLogger from './web_logger'
-import { parseTextFileLocally } from './web_platform_utils'
+import { parseTextFileLocally, parseUrlOnWeb } from './web_platform_utils'
 
 export default class WebPlatform extends IndexedDBStorage implements Platform {
   public type: PlatformType = 'web'
@@ -174,7 +174,7 @@ export default class WebPlatform extends IndexedDBStorage implements Platform {
   }
 
   public async parseUrl(url: string): Promise<{ key: string; title: string }> {
-    throw new Error('Not implemented')
+    return parseUrlOnWeb(url)
   }
 
   public async isFullscreen() {

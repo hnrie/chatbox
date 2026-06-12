@@ -78,7 +78,7 @@ export function MessageAttachmentGrid({ files, links, align = 'start' }: Message
   const shouldRightAlignLastItem = align === 'end' && visibleTotalCount % 2 === 1 && visibleTotalCount > 1
 
   const retryAttachment = async (attachmentId: number) => {
-    if (platform.type !== 'desktop') {
+    if (!supportsSessionAttachmentRag()) {
       return
     }
     setRetryingIds((prev) => [...prev, attachmentId])

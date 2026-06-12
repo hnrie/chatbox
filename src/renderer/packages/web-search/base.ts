@@ -1,7 +1,8 @@
 import { CapacitorHttp } from '@capacitor/core'
 import type { SearchResult } from '@shared/types'
-import { type FetchOptions, ofetch } from 'ofetch'
+import { createFetch, type FetchOptions, ofetch } from 'ofetch'
 import platform from '@/platform'
+import { fetchWithProxy } from '@/utils/request'
 import { CHATBOX_BUILD_PLATFORM } from '@/variables'
 
 const IOS_USER_AGENT =
@@ -10,6 +11,12 @@ const ANDROID_USER_AGENT =
   'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36'
 const FALLBACK_MOBILE_USER_AGENT =
   'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36'
+
+// Browsers block direct requests to most search endpoints (no CORS headers),
+// so on web every request goes through the Chatbox CORS proxy — the
+// deployment's own same-origin serverless function when available, otherwise
+// the hosted proxy. See src/renderer/utils/cors-proxy.ts.
+const webProxiedOfetch = createFetch({ fetch: fetchWithProxy as unknown as typeof globalThis.fetch })
 
 export interface ParseLinkResult {
   url: string
@@ -70,6 +77,8 @@ abstract class WebSearch {
         ...(responseType ? { responseType } : {}),
       })
       return response.data
+    } else if (platform.type === 'web') {
+      return webProxiedOfetch(url, options)
     } else {
       return ofetch(url, options)
     }

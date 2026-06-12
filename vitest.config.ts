@@ -10,7 +10,11 @@ export default defineConfig(({ mode }) => ({
       ...loadEnv(mode, process.cwd(), ''),
       NODE_ENV: 'test',
     },
-    include: ['src/**/*.{test,spec}.{ts,tsx}', 'test/integration/**/*.{test,spec}.{ts,tsx}'],
+    include: [
+      'src/**/*.{test,spec}.{ts,tsx}',
+      'web/**/*.{test,spec}.mjs',
+      'test/integration/**/*.{test,spec}.{ts,tsx}',
+    ],
     exclude: ['node_modules', 'dist', 'release', '.erb', 'test/integration/model-provider'],
     setupFiles: [],
     testTimeout: 10000,

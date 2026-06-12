@@ -1,5 +1,4 @@
 import type { SearchResult } from '@shared/types'
-import { ofetch } from 'ofetch'
 import WebSearch from './base'
 
 export const QUERIT_SEARCH_URL = 'https://api.querit.ai/v1/search'
@@ -29,7 +28,7 @@ export class QueritSearch extends WebSearch {
         requestBody.filters = { timeRange: { date: this.timeRange } }
       }
 
-      const response = await ofetch(QUERIT_SEARCH_URL, {
+      const response = await this.fetch(QUERIT_SEARCH_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

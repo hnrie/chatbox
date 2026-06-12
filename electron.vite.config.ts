@@ -291,6 +291,18 @@ export default defineConfig(({ mode }) => {
       },
       server: {
         port: Number(process.env.DEV_PORT) || 1212,
+        // Cross-origin isolation enables SharedArrayBuffer, required by the
+        // WASM SQLite database (knowledge base / RAG) when running the web
+        // build in a browser. Production hosts set the same headers (see
+        // vercel.json / netlify.toml / scripts/web-server.mjs).
+        ...(isWeb
+          ? {
+              headers: {
+                'Cross-Origin-Opener-Policy': 'same-origin',
+                'Cross-Origin-Embedder-Policy': 'credentialless',
+              },
+            }
+          : {}),
       },
       define: {
         'process.type': '"renderer"',

@@ -11,6 +11,7 @@ import * as appleAppStore from '@/packages/apple_app_store'
 import { convertToModelMessages, injectModelSystemPrompt } from '@/packages/model-calls/message-utils'
 import { estimateTokensFromMessages } from '@/packages/token'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import storage from '@/storage'
 import { StorageKeyGenerator } from '@/storage/StoreStorage'
 import { featureFlags } from '@/utils/feature-flags'
@@ -35,7 +36,7 @@ import {
 const log = getLogger('session-orchestration')
 
 async function refreshSessionAttachmentStatuses(messages: Message[]): Promise<Message[]> {
-  if (platform.type !== 'desktop') {
+  if (!supportsSessionAttachmentRag()) {
     return messages
   }
 

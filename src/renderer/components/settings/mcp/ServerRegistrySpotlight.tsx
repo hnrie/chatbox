@@ -4,6 +4,7 @@ import { IconJson, IconSearch, IconSquareRoundedPlusFilled } from '@tabler/icons
 import { type FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
+import platform from '@/platform'
 import { MCP_ENTRIES_COMMUNITY, MCP_ENTRIES_OFFICIAL, type MCPRegistryEntry } from './registries'
 
 const ServerRegistrySpotlight: FC<{
@@ -34,26 +35,31 @@ const ServerRegistrySpotlight: FC<{
           },
         ],
       },
-      {
-        group: t('Explore (official)')!,
-        actions: MCP_ENTRIES_OFFICIAL.map((entry) => ({
-          id: entry.name,
-          label: entry.title,
-          description: entry.description,
-          onClick: () => props.triggerAddServer(entry),
-          leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
-        })),
-      },
-      {
-        group: t('Explore (community)')!,
-        actions: MCP_ENTRIES_COMMUNITY.map((entry) => ({
-          id: entry.name,
-          label: entry.title,
-          description: entry.description,
-          onClick: () => props.triggerAddServer(entry),
-          leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
-        })),
-      },
+      // Registry entries are stdio-based (npx/uvx commands) and can only run in the desktop app.
+      ...(platform.type === 'desktop'
+        ? [
+            {
+              group: t('Explore (official)')!,
+              actions: MCP_ENTRIES_OFFICIAL.map((entry) => ({
+                id: entry.name,
+                label: entry.title,
+                description: entry.description,
+                onClick: () => props.triggerAddServer(entry),
+                leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
+              })),
+            },
+            {
+              group: t('Explore (community)')!,
+              actions: MCP_ENTRIES_COMMUNITY.map((entry) => ({
+                id: entry.name,
+                label: entry.title,
+                description: entry.description,
+                onClick: () => props.triggerAddServer(entry),
+                leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
+              })),
+            },
+          ]
+        : []),
     ]
   }, [props.triggerAddServer])
   return (

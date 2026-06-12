@@ -1,6 +1,5 @@
 import { ChatboxAIAPIError } from '@shared/models/errors'
 import type { SearchResult } from '@shared/types'
-import { ofetch } from 'ofetch'
 import WebSearch, { type ParseLinkResult } from './base'
 
 export class TavilySearch extends WebSearch {
@@ -15,7 +14,7 @@ export class TavilySearch extends WebSearch {
 
   async search(query: string, signal?: AbortSignal): Promise<SearchResult> {
     try {
-      const response = await ofetch('https://api.tavily.com/search', {
+      const response = await this.fetch('https://api.tavily.com/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +43,7 @@ export class TavilySearch extends WebSearch {
   }
 
   async parseLink(url: string, signal?: AbortSignal): Promise<ParseLinkResult> {
-    const response = await ofetch('https://api.tavily.com/extract', {
+    const response = await this.fetch('https://api.tavily.com/extract', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -25,7 +25,7 @@ import { getSessionWebBrowsing } from './utils'
 const log = getLogger('session-messages')
 
 async function attachLargeFileRagMetadata(sessionId: string, message: Message): Promise<Message> {
-  if (platform.type !== 'desktop' || !message.files?.length) {
+  if (!supportsSessionAttachmentRag() || !message.files?.length) {
     return message
   }
 

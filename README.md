@@ -129,6 +129,15 @@ We regularly sync code from the pro repo to this repo, and vice versa.
 
 For more information: [chatboxai.app](https://chatboxai.app/)
 
+### Web Version
+
+The web version can be deployed to any static/serverless host (Vercel, Netlify, your own server). Ready-made configs (`vercel.json`, `netlify.toml`, `scripts/web-server.mjs`) are included — see [docs/web-deployment.md](./docs/web-deployment.md).
+
+```bash
+pnpm build:web        # build the static site (release/app/dist/renderer)
+pnpm serve:web        # serve it locally with SPA fallback + CORS proxy
+```
+
 ## Quick Start
 
 ### For End Users

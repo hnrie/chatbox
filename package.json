@@ -37,7 +37,7 @@
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
     "start:preload": "electron-vite build --preload --watch",
     "start:renderer": "electron-vite",
-    "serve:web": "npx serve ./release/app/dist/renderer",
+    "serve:web": "node scripts/web-server.mjs",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",

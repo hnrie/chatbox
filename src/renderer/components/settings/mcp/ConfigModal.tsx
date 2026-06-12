@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { Modal } from '@/components/layout/Overlay'
 import { MCPServer } from '@/packages/mcp/controller'
 import type { MCPServerConfig } from '@/packages/mcp/types'
+import platform from '@/platform'
 import { trackEvent } from '@/utils/track'
 import { getConfigFromFormValues, getFormValuesFromConfig, type MCPServerConfigFormValues } from './utils'
 
@@ -130,7 +131,13 @@ const ConfigForm: FC<{
         >
           <Group>
             <Radio variant="outline" size="sm" value="http" label={t('Remote (http/sse)')} />
-            <Radio variant="outline" size="sm" value="stdio" label={t('Local (stdio)')} />
+            <Radio
+              variant="outline"
+              size="sm"
+              value="stdio"
+              label={platform.type === 'desktop' ? t('Local (stdio)') : `${t('Local (stdio)')} (${t('desktop only')})`}
+              disabled={platform.type !== 'desktop'}
+            />
           </Group>
         </Radio.Group>
         {form.values.transport.type === 'stdio' && (

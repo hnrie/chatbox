@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "ELECTRON_SKIP_BINARY_DOWNLOAD=1 pnpm install --ignore-scripts",
+  "buildCommand": "pnpm build:web",
+  "outputDirectory": "release/app/dist/renderer",
+  "rewrites": [
+    {
+      "source": "/proxy-api/completions",
+      "destination": "/api/cors-proxy"
+    },
+    {
+      "source": "/((?!api/|proxy-api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "credentialless" }
+      ]
+    },
+    {
+      "source": "/(js|styles|fonts|images|assets)/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    }
+  ]
+}
