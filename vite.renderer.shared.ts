@@ -228,7 +228,8 @@ export function createRendererConfig(options: RendererConfigOptions): UserConfig
       force: true,
       include: ['mermaid', ...(isWeb ? ['@tursodatabase/database-wasm/vite'] : [])],
       esbuildOptions: {
-        target: 'es2015',
+        // es2022+ required: the WASM database dep uses top-level await
+        target: 'es2022',
       },
     },
   }
