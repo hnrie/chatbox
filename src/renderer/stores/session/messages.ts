@@ -14,6 +14,7 @@ import { runCompactionWithUIState } from '@/packages/context-management'
 import { getModelDisplayName } from '@/packages/model-setting-utils'
 import { estimateTokensFromMessages } from '@/packages/token'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import { SESSION_ATTACHMENT_RAG_LOG_PREFIX } from '../../../shared/session-attachment-rag/logging'
 import * as chatStore from '../chatStore'
 import { ensureMessageFileSessionAttachment } from '../sessionAttachmentRagIndexing'
@@ -164,7 +165,7 @@ export async function persistStreamingMessage(
  * @param messageId
  */
 export async function removeMessage(sessionId: string, messageId: string) {
-  if (platform.type === 'desktop') {
+  if (supportsSessionAttachmentRag()) {
     try {
       await platform.getSessionAttachmentRagController().deleteMessageAttachments(messageId)
     } catch (error) {

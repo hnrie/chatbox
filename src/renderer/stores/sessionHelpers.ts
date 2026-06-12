@@ -338,7 +338,7 @@ export async function prepareFileAttachment(
 
       const isSessionAttachmentRagFileType = isSessionAttachmentRagSupportedFilePath(file.name)
       const exceedsSessionAttachmentRagThreshold =
-        platform.type === 'desktop' &&
+        (platform.type === 'desktop' || platform.type === 'web') &&
         isSessionAttachmentRagFileType &&
         stats.byteLength > SESSION_ATTACHMENT_RAG_INLINE_BYTE_THRESHOLD
       const sessionAttachmentRagAllowed = exceedsSessionAttachmentRagThreshold
@@ -433,7 +433,7 @@ export async function prepareFileAttachment(
 
     const isSessionAttachmentRagFileType = isSessionAttachmentRagSupportedFilePath(file.name)
     const exceedsSessionAttachmentRagThreshold =
-      platform.type === 'desktop' &&
+      (platform.type === 'desktop' || platform.type === 'web') &&
       isSessionAttachmentRagFileType &&
       stats.byteLength > SESSION_ATTACHMENT_RAG_INLINE_BYTE_THRESHOLD
     const sessionAttachmentRagAllowed = exceedsSessionAttachmentRagThreshold

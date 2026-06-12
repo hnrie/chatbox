@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import * as toastActions from '@/stores/toastActions'
 import { MessageAttachment } from '../InputBox/Attachments'
 
@@ -28,12 +29,12 @@ export function MessageAttachmentGrid({ files, links, align = 'start' }: Message
   const { data: sessionAttachments, refetch: refetchSessionAttachments } = useQuery({
     queryKey: ['session-attachment-rag-attachments', ...sessionAttachmentIds.sort((a, b) => a - b)],
     queryFn: async () => {
-      if (platform.type !== 'desktop' || sessionAttachmentIds.length === 0) {
+      if (!supportsSessionAttachmentRag() || sessionAttachmentIds.length === 0) {
         return []
       }
       return platform.getSessionAttachmentRagController().getAttachments(sessionAttachmentIds)
     },
-    enabled: platform.type === 'desktop' && sessionAttachmentIds.length > 0,
+    enabled: supportsSessionAttachmentRag() && sessionAttachmentIds.length > 0,
     staleTime: 3000,
     refetchInterval: (query) => {
       const attachments = query.state.data ?? []

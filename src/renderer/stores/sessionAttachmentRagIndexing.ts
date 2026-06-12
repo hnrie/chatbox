@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { getLogger } from '@/lib/utils'
 import platform from '@/platform'
+import { supportsSessionAttachmentRag } from '@/platform/rag-capabilities'
 import { isSessionAttachmentRagSupportedFilePath } from '../../shared/file-extensions'
 import { SESSION_ATTACHMENT_RAG_LOG_PREFIX } from '../../shared/session-attachment-rag/logging'
 import type { MessageFile, SessionAttachment } from '../../shared/types'
@@ -12,7 +13,7 @@ function shouldIndexPreparedAttachment(
   file: Pick<AttachmentPreparationResult, 'ragMode' | 'storageKey' | 'error' | 'sessionAttachmentAvailability'>
 ) {
   return (
-    platform.type === 'desktop' &&
+    supportsSessionAttachmentRag() &&
     file.ragMode === 'session-retrieval' &&
     !!file.storageKey &&
     !file.error &&
@@ -22,7 +23,7 @@ function shouldIndexPreparedAttachment(
 
 function shouldIndexMessageFile(file: MessageFile) {
   return (
-    platform.type === 'desktop' &&
+    supportsSessionAttachmentRag() &&
     file.ragMode === 'session-retrieval' &&
     !!file.storageKey &&
     isSessionAttachmentRagSupportedFilePath(file.name) &&
