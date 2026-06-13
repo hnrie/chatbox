@@ -11,6 +11,9 @@ type MCPClient = Awaited<ReturnType<typeof createMCPClient>>
 
 async function createClient(transportConfig: TransportConfig, name = 'chatbox-mcp-client'): Promise<MCPClient> {
   if (transportConfig.type === 'stdio') {
+    if (typeof window === 'undefined' || !window.electronAPI) {
+      throw new Error('Local (stdio) MCP servers are only available in the desktop app. Use a Remote (HTTP/SSE) server instead.')
+    }
     const transport = await IPCStdioTransport.create(transportConfig)
     let errorMessage = ''
     try {

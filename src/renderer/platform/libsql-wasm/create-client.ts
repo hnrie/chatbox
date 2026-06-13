@@ -1,6 +1,6 @@
 import type { Client, InArgs, InStatement, ResultSet, Row, TransactionMode } from '@libsql/core/api'
 import { ResultSetImpl } from '@libsql/core/util'
-import { connect, type Database } from '@tursodatabase/database-wasm/bundle'
+import type { Database } from '@tursodatabase/database-wasm/bundle'
 
 type NormalizedStatement = {
   sql: string
@@ -170,6 +170,9 @@ class WasmLibsqlClient {
 }
 
 export async function createWasmLibsqlClient(connectionUrl: string) {
+  // Lazy import: the WASM bundle spawns a Worker at module-evaluation time,
+  // which would crash non-browser environments (tests) and slow down startup.
+  const { connect } = await import('@tursodatabase/database-wasm/bundle')
   const db = await connect(resolveOpfsPath(connectionUrl))
   return new WasmLibsqlClient(db) as unknown as Client
 }

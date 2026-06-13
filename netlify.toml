@@ -1,0 +1,23 @@
+# Netlify configuration for the Chatbox web version.
+# Deploy: connect the repo, Netlify picks this file up automatically.
+
+[build]
+  command = "pnpm build:web"
+  publish = "release/app/dist/renderer"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # The web build does not need the Electron binary or native-module rebuilds.
+  ELECTRON_SKIP_BINARY_DOWNLOAD = "1"
+  SKIP_ELECTRON_REBUILD = "1"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# SPA fallback. Netlify Functions (e.g. /proxy-api/*) and existing static
+# files are matched before redirects, so this only catches client routes.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

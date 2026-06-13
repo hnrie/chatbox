@@ -2,6 +2,12 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
 
+// Web-only builds (Vercel, Netlify, ...) don't need Electron native modules.
+if (['1', 'true'].includes(String(process.env.SKIP_ELECTRON_REBUILD).toLowerCase())) {
+    console.log('SKIP_ELECTRON_REBUILD is set, skipping electron-rebuild')
+    process.exit(0)
+}
+
 // Inline the paths instead of importing from webpack.paths.ts
 const rootPath = path.join(__dirname, '../..')
 const appPath = path.join(rootPath, 'release/app')

@@ -1,6 +1,7 @@
 import platform from '@/platform'
 import { ApiError, BaseError, NetworkError } from '../../shared/models/errors'
 import { isLocalHost } from '../../shared/utils/network_utils'
+import { getCorsProxyCompletionsEndpoint } from './cors-proxy'
 import { handleMobileRequest } from './mobile-request'
 
 interface RequestOptions {
@@ -58,7 +59,7 @@ async function doRequest(url: string, options: RequestOptions): Promise<Response
   if (useProxy && !isLocalHost(url) && platform.type !== 'mobile') {
     const version = await platform.getVersion()
     headers.set('CHATBOX-VERSION', version || 'unknown')
-    requestUrl = 'https://cors-proxy.chatboxai.app/proxy-api/completions'
+    requestUrl = await getCorsProxyCompletionsEndpoint()
   }
 
   const makeRequest = async () => {

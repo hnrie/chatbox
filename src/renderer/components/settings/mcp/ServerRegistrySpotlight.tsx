@@ -4,6 +4,7 @@ import { IconJson, IconSearch, IconSquareRoundedPlusFilled } from '@tabler/icons
 import { type FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
+import platform from '@/platform'
 import { MCP_ENTRIES_COMMUNITY, MCP_ENTRIES_OFFICIAL, type MCPRegistryEntry } from './registries'
 
 const ServerRegistrySpotlight: FC<{
@@ -12,7 +13,7 @@ const ServerRegistrySpotlight: FC<{
 }> = (props) => {
   const { t } = useTranslation()
   const actions: (SpotlightActionGroupData | SpotlightActionData)[] = useMemo(() => {
-    return [
+    const groups: (SpotlightActionGroupData | SpotlightActionData)[] = [
       {
         group: t('Add or Import')!,
         actions: [
@@ -34,27 +35,33 @@ const ServerRegistrySpotlight: FC<{
           },
         ],
       },
-      {
-        group: t('Explore (official)')!,
-        actions: MCP_ENTRIES_OFFICIAL.map((entry) => ({
-          id: entry.name,
-          label: entry.title,
-          description: entry.description,
-          onClick: () => props.triggerAddServer(entry),
-          leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
-        })),
-      },
-      {
-        group: t('Explore (community)')!,
-        actions: MCP_ENTRIES_COMMUNITY.map((entry) => ({
-          id: entry.name,
-          label: entry.title,
-          description: entry.description,
-          onClick: () => props.triggerAddServer(entry),
-          leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
-        })),
-      },
     ]
+    // Registry entries are installed as local (stdio) servers, which need the desktop app
+    if (platform.type === 'desktop') {
+      groups.push(
+        {
+          group: t('Explore (official)')!,
+          actions: MCP_ENTRIES_OFFICIAL.map((entry) => ({
+            id: entry.name,
+            label: entry.title,
+            description: entry.description,
+            onClick: () => props.triggerAddServer(entry),
+            leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
+          })),
+        },
+        {
+          group: t('Explore (community)')!,
+          actions: MCP_ENTRIES_COMMUNITY.map((entry) => ({
+            id: entry.name,
+            label: entry.title,
+            description: entry.description,
+            onClick: () => props.triggerAddServer(entry),
+            leftSection: <Avatar src={entry.icon} name={entry.name} color="initials" size={20} />,
+          })),
+        }
+      )
+    }
+    return groups
   }, [props.triggerAddServer])
   return (
     <Spotlight

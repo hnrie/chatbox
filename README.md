@@ -301,11 +301,50 @@ Before you begin, ensure you have the following installed:
 | Command | Description |
 |---------|-------------|
 | `pnpm run dev` | Start development server with hot-reload |
+| `pnpm run dev:web` | Start the browser-only web version (no Electron) |
 | `pnpm run package` | Build and package for current platform |
 | `pnpm run package:all` | Build and package for all platforms |
 | `pnpm run build` | Build for production without packaging |
+| `pnpm run build:web` | Build the static web version (SPA) |
+| `pnpm run preview:web` | Serve the web build locally, production-like |
 | `pnpm run lint` | Run Biome to check code quality |
 | `pnpm run test` | Run Vitest test suite |
+
+### Web Version (Vercel, Netlify, and other hosts)
+
+Chatbox can be deployed as a fully client-side web app. All data (settings, chats, knowledge base) stays in the browser (IndexedDB/OPFS), and requests go directly from the browser to your AI providers.
+
+**Deploy to Vercel or Netlify**
+
+Import the repository — `vercel.json` / `netlify.toml` are picked up automatically. The deployment includes:
+
+- The static SPA built with `pnpm build:web` (output: `release/app/dist/renderer`)
+- A serverless **CORS proxy** at `/proxy-api/*` so providers that don't allow browser-origin requests work when "Proxy" is enabled for a provider (streaming responses are passed through)
+- A serverless webpage reader at `/api/fetch-webpage` for link attachments
+
+Optional environment variables for the serverless proxy:
+
+| Variable | Description |
+|----------|-------------|
+| `CHATBOX_PROXY_ALLOWED_HOSTS` | Comma-separated allowlist of upstream hosts (e.g. `api.openai.com,*.anthropic.com`). Unset = all public hosts |
+| `CHATBOX_PROXY_ALLOW_PRIVATE` | Set `1` to allow proxying to private/loopback addresses (self-hosting) |
+| `CHATBOX_PROXY_ALLOWED_ORIGINS` | Origins that may call the proxy cross-origin. Unset = same-origin only (recommended) |
+
+**Deploy to any static host**
+
+Run `pnpm build:web` and upload `release/app/dist/renderer`. Configure an SPA fallback (rewrite all paths to `/index.html`); `_redirects` and `_headers` files are included in the build output for hosts that support them (e.g. Cloudflare Pages). Without serverless functions the app still works — provider requests with "Proxy" enabled fall back to the proxy operated by Chatbox (`cors-proxy.chatboxai.app`).
+
+**Test the production web build locally**
+
+```bash
+pnpm build:web
+pnpm preview:web   # http://localhost:8080, includes the same /proxy-api/* endpoints
+```
+
+Notes for the web version:
+
+- Local (stdio) MCP servers and local document parsing require the desktop app; remote (HTTP/SSE) MCP servers, knowledge base, and session attachment RAG work in modern browsers
+- Providers that allow browser requests (CORS) work without the proxy; for others, enable the per-provider "Proxy" option in provider settings
 
 ### Project Structure
 

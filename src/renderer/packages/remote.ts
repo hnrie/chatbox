@@ -11,6 +11,7 @@ import {
   USE_LOCAL_CHATBOX,
   USE_NEWDB_API,
 } from '@/variables'
+import { getFetchWebpageEndpoint } from '@/utils/cors-proxy'
 import * as chatboxaiAPI from '../../shared/request/chatboxai_pool'
 import { createAfetch, createAuthenticatedAfetch, uploadFile } from '../../shared/request/request'
 import {
@@ -527,7 +528,7 @@ export async function parseUserLinkFree(params: { url: string }) {
     text: string
   }
   const afetch = await getAfetch()
-  const res = await afetch(`https://cors-proxy.chatboxai.app/api/fetch-webpage`, {
+  const res = await afetch(await getFetchWebpageEndpoint(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
