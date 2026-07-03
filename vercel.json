@@ -4,6 +4,7 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build:web",
   "outputDirectory": "release/app/dist/renderer",
+  "node-version": "22.x",
   "build": {
     "env": {
       "ELECTRON_SKIP_BINARY_DOWNLOAD": "1",
