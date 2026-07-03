@@ -34,6 +34,14 @@ export interface Props {
   sessionListViewportRef: MutableRefObject<HTMLDivElement | null>
 }
 
+function SessionListFooter() {
+  return (
+    <Flex justify="center" py="xs">
+      <IconLoader2 size={16} className="animate-spin" style={{ color: 'var(--mantine-color-dimmed)' }} />
+    </Flex>
+  )
+}
+
 export default function SessionList(props: Props) {
   const { t } = useTranslation()
   const { sessionMetaList: sortedSessions, fetchNextPage, hasNextPage, isFetchingNextPage } = useSessionList()
@@ -95,11 +103,7 @@ export default function SessionList(props: Props) {
     () =>
       hasNextPage
         ? {
-            Footer: () => (
-              <Flex justify="center" py="xs">
-                <IconLoader2 size={16} className="animate-spin" style={{ color: 'var(--mantine-color-dimmed)' }} />
-              </Flex>
-            ),
+            Footer: SessionListFooter,
           }
         : {},
     [hasNextPage]

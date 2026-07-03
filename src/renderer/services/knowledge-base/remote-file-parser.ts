@@ -32,6 +32,8 @@ async function readStorageAsBlob(storageKey: string, filename: string, mimeType:
 }
 
 function isProbablyText(value: string): boolean {
+  // Control chars (tab, LF, CR) are intentional: they are the allowed whitespace when detecting plain text.
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: intentional whitespace allowlist for text detection
   return !value.startsWith('data:') && /^[\x09\x0A\x0D\x20-\x7E\u0080-\uFFFF]*$/.test(value.slice(0, 512))
 }
 
